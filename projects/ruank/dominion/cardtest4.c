@@ -28,7 +28,7 @@ int main() {
   int handpos = 0, choice1 = 0, choice2 = 0, choice3 = 0, bonus = 0;
   int seed = 1000;
   int numPlayers = 2;
-  int thisPlayer = 0;
+  int thisPlayer = 0, otherPlayer = 1;
 	struct gameState G, testG;
 	int k[10] = {adventurer, embargo, feast, minion, mine, cutpurse,
 			sea_hag, tribute, smithy, council_room};
@@ -99,6 +99,69 @@ int main() {
 	asserttest(buyCard(feast, &G), 0);
 	asserttest(buyCard(feast, &testG), -1);
 
+  // ----------- TEST 5: No state change occur for other players --------------
+	printf("\nTEST 5: No state change occur for other players\n");
+	
+	// copy the game state to a test case
+	memcpy(&testG, &G, sizeof(struct gameState));
+
+	printf("Initial player %d state:\n", otherPlayer);
+	
+	printf("Player %d hand count: %d expected: %d\n", otherPlayer, testG.handCount[otherPlayer], G.handCount[otherPlayer]);
+	asserttest(testG.handCount[otherPlayer], G.handCount[otherPlayer]);
+
+	printf("Player %d deck count: %d expected: %d\n", otherPlayer, testG.deckCount[otherPlayer], G.deckCount[otherPlayer]);
+	asserttest(testG.deckCount[otherPlayer], G.deckCount[otherPlayer]);
+	
+	printf("Player %d discard count: %d expected: %d\n", otherPlayer, testG.discardCount[otherPlayer], G.discardCount[otherPlayer]);
+	asserttest(testG.discardCount[otherPlayer], G.discardCount[otherPlayer]);
+
+	printf("Player %d plays %s.\n", thisPlayer, TESTCARD);
+	cardEffect(smithy, choice1, choice2, choice3, &testG, handpos, &bonus);
+
+	printf("Player %d hand count: %d expected: %d\n", otherPlayer, testG.handCount[otherPlayer], G.handCount[otherPlayer]);
+	asserttest(testG.handCount[otherPlayer], G.handCount[otherPlayer]);
+
+	printf("Player %d deck count: %d expected: %d\n", otherPlayer, testG.deckCount[otherPlayer], G.deckCount[otherPlayer]);
+	asserttest(testG.deckCount[otherPlayer], G.deckCount[otherPlayer]);
+
+	printf("Player %d discard count: %d expected: %d\n", otherPlayer, testG.discardCount[otherPlayer], G.discardCount[otherPlayer]);
+	asserttest(testG.discardCount[otherPlayer], G.discardCount[otherPlayer]);
+
+  // ----------- TEST 6: No state change should occur to the victory card piles and kingdom card piles. --------------
+  printf("\nTEST 6: No state change should occur to the victory card piles and kingdom card piles\n");
+
+  int v[3] = {province, duchy, estate};
+  int i, v_pile_cnt_testG = 0, k_pile_cnt_testG = 0, v_pile_cnt_G = 0, k_pile_cnt_G = 0;
+  for (i = 0; i < 3; i++) {
+    v_pile_cnt_testG += supplyCount(v[i], &testG);
+    v_pile_cnt_G += supplyCount(v[i], &G);
+  }
+  for (i = 0; i < 10; i++) {
+    k_pile_cnt_testG += supplyCount(k[i], &testG);
+    k_pile_cnt_G += supplyCount(k[i], &G);
+  }
+
+  printf("Before play %s card\n", TESTCARD);
+  printf("Victory cards pile count: %d expected: %d\n", v_pile_cnt_testG, v_pile_cnt_G);
+  asserttest(v_pile_cnt_testG, v_pile_cnt_G);
+  printf("Kingdom cards pile count: %d expected: %d\n", k_pile_cnt_testG, k_pile_cnt_G);
+  asserttest(k_pile_cnt_testG, k_pile_cnt_G);
+
+  printf("Player %d plays %s.\n", thisPlayer, TESTCARD);
+  cardEffect(smithy, choice1, choice2, choice3, &testG, handpos, &bonus);
+
+  v_pile_cnt_testG = 0, k_pile_cnt_testG = 0;
+  for (i = 0; i < 3; i++) {
+    v_pile_cnt_testG += supplyCount(v[i], &testG);
+  }
+  for (i = 0; i < 10; i++) {
+    k_pile_cnt_testG += supplyCount(k[i], &testG);
+  }
+  printf("Victory cards pile count: %d expected: %d\n", v_pile_cnt_testG, v_pile_cnt_G);
+  asserttest(v_pile_cnt_testG, v_pile_cnt_G);
+  printf("Kingdom cards pile count: %d expected: %d\n", k_pile_cnt_testG, k_pile_cnt_G);
+  asserttest(k_pile_cnt_testG, k_pile_cnt_G);
 
 	if (hasError)
     printf("\n >>>>> Failsure: Testing complete %s <<<<<\n\n", TESTCARD);
