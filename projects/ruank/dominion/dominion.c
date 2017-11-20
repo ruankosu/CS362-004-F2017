@@ -674,7 +674,7 @@ int adventurerFunc(int currentPlayer, struct gameState *state) {
 int smithyFunc(int currentPlayer, int handPos, struct gameState *state) {
   int i;
   //+3 Cards
-  for (i = 0; i < 4; i++)
+  for (i = 0; i < 3; i++)
   {
     drawCard(currentPlayer, state);
   }
@@ -818,12 +818,15 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
   {
     case adventurer:
       adventurerFunc(currentPlayer, state);
+      break;
 			
     case council_room:
       councilRoomFunc(currentPlayer, handPos, state);
-			
+      break;
+      
     case feast:
-      feastFunc(currentPlayer, choice1, state);      			
+      feastFunc(currentPlayer, choice1, state);
+      break;     			
 			
     case gardens:
       return -1;
@@ -865,9 +868,11 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
 			
     case remodel:
       remodelFunc(currentPlayer, choice1, choice2, handPos, state);
+      break;
 		
     case smithy:
-      smithyFunc(currentPlayer, handPos, state); 
+      smithyFunc(currentPlayer, handPos, state);
+      break;
 		
     case village:
       //+1 Card

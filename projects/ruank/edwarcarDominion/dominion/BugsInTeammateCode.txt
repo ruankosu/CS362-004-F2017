@@ -1,0 +1,21 @@
+Smithy Card
+Bug1: 
+Symptom: The number of cards gained is not 3. If the first player plays the smithy card upon the game’s initialized state. The player would gain more than 3 cards in this hand. The test showed 10 gains in hand after card play. 
+Cause: The end value of the for loop Is set to 5. This correct value should iterate to 3. 
+How it was found: The unit test tested for plus three cards when played. The test would play the smithy card from player1 upon initial game setup. It checks the number of cards in the player’s hand after the card is played. In this case, the number of card gained far exceeds the 3 cards that’s supposed to be gained from the given rule. 
+
+Bug2: 
+Symptom: The played card and deck count values are not correct.
+Cause: The discardCard function is commented out.
+How it was found: The unit test tested for number of cards in the player’s hand and in the deck after the card is played. The value of the expected value doesn’t match the test result value. The test would again play the smithy card form player1 upon initial game setup. The played card is supposed to go to the discard pile, but it doesn’t appears to do so. We can see that by the number of cards still in the player’s hand and the number of cards in the discard pile does not contain the played smithy card.
+
+Adventurer Card:
+Bug1: 
+Symptom: The number of treasury cards gained in hand after play is not correct. The test showed from an initial game step up. If player one plays the adventurer card right away, the person gains more than 2 treasury cards.
+Cause: The WHILE loop controlling the number of cards to draw is not set to have the correct number of iterations. The loop is set to end after 5 treasury card is drawn. This value should be set to 2.
+How it was found: The unit test tested exactly how many counts of treasury cards are gained in hand when the card is play upon the game’s initial state. We would could the number of treasury cards in the deck and the number of treasury cards in hand. We then play the card to see if the number of treasury card in hand and in the deck are at the expected value. In this case, we saw they are not. 
+
+Bug2: 
+Symptom: When setting the game state with 2 non-treasury cards and 2 treasury cards underneath them and leaving the bottom card as is. The expectation is that if the player plays this cards at the game’s initial state with 5 cards in the deck, then we would expect to discard 2 non-treasury cards and 2 treasury cards in hand, leaving 1 card still in the deck. We see there’s zero cards in deck. 
+Cause: This is similar to the cause in Bug1. It could be that since the Adventurer card is drawing an incorrect number of treasury cards from the deck. We now see a downstream effect where the integrity of the deck and discard piles are no longer showing the right count.
+How it was found: The unit test tested not only for the number of treasury cards the player has gained upon playing the card after initializing the game. We look at under the expected condition. The card should yield 2 new treasury cards in the player’s hand and discard any revealed cards. The number of revealed cards should equal to the number of discarded cards for that play and finally the number of cards in the deck should equal to the original number minus the two treasury cards. In this case, the test showed that all of the cards in the deck was taken which indicates an issue with the way we call drawCard in the adventurer card function. 
